@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buggy E-Commerce Site</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+        }
+        
+        .logo h1 {
+            font-size: 2.2rem;
+        }
+        
+        .cart-icon {
+            position: relative;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            height: 200px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .product-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .add-to-cart {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            background: #2980b9;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        /* Cart Modal Styles */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .close-cart {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .cart-items {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .item-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .remove-btn {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .cart-total {
+            padding: 15px 0;
+            border-top: 2px solid #eee;
+            border-bottom: 2px solid #eee;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            background: #27ae60;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+        }
+        
+        /* Overlay for modal */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        /* Checkout Modal Styles */
+        .checkout-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+        
+        .close-checkout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Payment method styles */
+        .payment-methods {
+            margin: 25px 0;
+        }
+        
+        .payment-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+        
+        .payment-option.selected {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+        
+        .payment-option input {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .payment-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .payment-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .payment-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+        
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .confirmation i {
+            font-size: 4rem;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .confirmation p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        
+        /* 404 Error Screen */
+        .error-404 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            text-align: center;
+            padding: 100px 20px;
+        }
+        
+        .error-404 h1 {
+            font-size: 5rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .error-404 h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .error-404 p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+        
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .cart-modal {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .products {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            /* Hide the fourth product on small screens */
+            .products .product-card:nth-child(4) {
+                display: none;
+            }
+            
+            /* BUG: Make the third product's add-to-cart button unclickable on mobile */
+            .products .product-card:nth-child(3) .add-to-cart {
+                pointer-events: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Ensure the hidden product stays hidden on very small screens */
+            .products .product-card:nth-child(4) {
+                display: none;
+            }
+            
+            /* BUG: Make the third product's add-to-cart button unclickable on mobile */
+            .products .product-card:nth-child(3) .add-to-cart {
+                pointer-events: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <h1>ShopEasy</h1>
+            </div>
+            <div class="cart-icon" id="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="cart-count">0</div>
+            </div>
+        </header>
+        
+        <div class="products">
+            <!-- Product 1: Wireless Headphones -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="product-info">
+                    <h3 class="product-title">Wireless Headphones</h3>
+                    <p class="product-description">Premium noise-cancelling headphones with 30hr battery life. Perfect for travel and work.</p>
+                    <div class="product-footer">
+                        <div class="product-price">$10.00</div>
+                        <button class="add-to-cart" data-id="1" data-name="Wireless Headphones" data-price="12.00">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 2: Smart Fitness Watch -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="product-info">
+                    <h3 class="product-title">Smart Fitness Watch</h3>
+                    <p class="product-description">Track your heart rate, steps, sleep and more with our advanced smartwatch.</p>
+                    <div class="product-footer">
+                        <div class="product-price">$20.00</div>
+                        <button class="add-to-cart" data-id="2" data-name="Smart Fitness Watch" data-price="22.00">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 3: Portable Bluetooth Speaker -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1546435770-a3e426bf472b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="product-info">
+                    <h3 class="product-title">Portable Bluetooth Speaker</h3>
+                    <p class="product-description">Waterproof speaker with 360° sound. Perfect for outdoor adventures.</p>
+                    <div class="product-footer">
+                        <div class="product-price">$30.00</div>
+                        <button class="add-to-cart" data-id="3" data-name="Portable Bluetooth Speaker" data-price="32.00">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 4: Smartphone Gimbal Stabilizer (will disappear on small screens) -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="product-info">
+                    <h3 class="product-title">Smartphone Gimbal Stabilizer</h3>
+                    <p class="product-description">Capture smooth videos and professional footage with your smartphone.</p>
+                    <div class="product-footer">
+                        <div class="product-price">$40.00</div>
+                        <button class="add-to-cart" data-id="4" data-name="Smartphone Gimbal Stabilizer" data-price="42.00">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart Modal -->
+        <div class="overlay" id="overlay"></div>
+        <div class="cart-modal" id="cart-modal">
+            <div class="cart-header">
+                <h2>Your Cart</h2>
+                <span class="close-cart" id="close-cart">&times;</span>
+            </div>
+            
+            <div class="cart-items" id="cart-items">
+                <div class="empty-cart">Your cart is empty</div>
+            </div>
+            
+            <div class="cart-total" id="cart-total">
+                Total: $0.00
+            </div>
+            
+            <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+        </div>
+        
+        <!-- Checkout Modal -->
+        <div class="checkout-modal" id="checkout-modal">
+            <span class="close-checkout" id="close-checkout">&times;</span>
+            
+            <div id="checkout-form">
+                <h2 class="form-title">Checkout Information</h2>
+                
+                <div class="form-group">
+                    <label for="full-name">Full Name *</label>
+                    <input type="text" id="full-name" placeholder="Enter your full name" required>
+                    <div class="error-message" id="name-error">Please enter your full name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="text" id="email" placeholder="Enter your email (optional)" required>
+                    <div class="error-message" id="email-error">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="text" id="phone" placeholder="Enter your phone number" required>
+                    <div class="error-message" id="phone-error">Please enter your phone number</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Shipping Address *</label>
+                    <input type="text" id="address" placeholder="Enter your full address" required>
+                    <div class="error-message" id="address-error">Please enter your shipping address</div>
+                </div>
+                
+                <!-- Payment Method Section -->
+                <div class="payment-methods">
+                    <div class="payment-title">Select Payment Method *</div>
+                    
+                    <div class="payment-option" id="cash-option">
+                        <input type="checkbox" name="payment-method" id="cash" value="cash">
+                        <div class="payment-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="payment-details">
+                            <div class="payment-name">Cash on Delivery</div>
+                            <div class="payment-description">Pay with cash when your order is delivered</div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-option" id="card-option">
+                        <input type="checkbox" name="payment-method" id="card" value="card">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-details">
+                            <div class="payment-name">Credit/Debit Card</div>
+                            <div class="payment-description">Pay securely with your credit or debit card</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" id="submit-order">Place Order</button>
+            </div>
+            
+            <div class="confirmation" id="confirmation">
+                <i class="fas fa-check-circle"></i>
+                <h2>Order Confirmed!</h2>
+                <p>Thank you for your purchase. Your order has been successfully placed.</p>
+                <p>A confirmation email has been sent to your email address.</p>
+            </div>
+        </div>
+        
+        <!-- 404 Error Screen -->
+        <div class="error-404" id="error-404">
+            <h1>404</h1>
+            <h2>Page Not Found</h2>
+            <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+            <button class="back-btn" id="back-btn">Go Back to Home</button>
+        </div>
+        
+        <footer>
+            <p>QA Assessment • ShopEasy E-Commerce</p>
+        </footer>
+    </div>
+
+    <script>
+        // Cart data structure to hold items
+        let cart = [];
+        const cartItemsEl = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartCountEl = document.querySelector('.cart-count');
+        const cartIcon = document.getElementById('cart-icon');
+        const cartModal = document.getElementById('cart-modal');
+        const overlay = document.getElementById('overlay');
+        const closeCart = document.getElementById('close-cart');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const closeCheckout = document.getElementById('close-checkout');
+        const submitOrder = document.getElementById('submit-order');
+        const checkoutForm = document.getElementById('checkout-form');
+        const confirmation = document.getElementById('confirmation');
+        const error404 = document.getElementById('error-404');
+        const backBtn = document.getElementById('back-btn');
+        
+        // Form elements
+        const fullNameInput = document.getElementById('full-name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const nameError = document.getElementById('name-error');
+        const emailError = document.getElementById('email-error');
+        const phoneError = document.getElementById('phone-error');
+        const addressError = document.getElementById('address-error');
+        
+        // Payment method elements
+        const cashOption = document.getElementById('cash-option');
+        const cardOption = document.getElementById('card-option');
+        const cashCheckbox = document.getElementById('cash');
+        const cardCheckbox = document.getElementById('card');
+        
+        // Function to update the cart display
+        function updateCartDisplay() {
+            // Clear the cart items container
+            cartItemsEl.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+                cartTotalEl.textContent = 'Total: $0.00';
+                cartCountEl.textContent = '0';
+                return;
+            }
+            
+            let total = 0;
+            
+            // Loop through each item in the cart
+            cart.forEach(item => {
+                const itemTotal = parseFloat(item.price) * item.quantity;
+                total += itemTotal;
+                
+                // Create cart item element
+                const cartItemEl = document.createElement('div');
+                cartItemEl.className = 'cart-item';
+                cartItemEl.innerHTML = `
+                    <div class="item-info">
+                        <div style="width:50px;height:50px;background:linear-gradient(45deg, #${Math.floor(Math.random()*16777215).toString(16)}, #${Math.floor(Math.random()*16777215).toString(16)});border-radius:8px;"></div>
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price}</div>
+                        </div>
+                    </div>
+                    <div class="item-quantity">
+                        <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn plus" data-id="${item.id}">+</button>
+                        <button class="remove-btn" data-id="${item.id}">Remove</button>
+                    </div>
+                `;
+                
+                cartItemsEl.appendChild(cartItemEl);
+            });
+            
+            // Update the total
+            cartTotalEl.textContent = `Total: $${total.toFixed(2)}`;
+            
+            // Update cart count 
+            cartCountEl.textContent = cart.length;
+        }
+        
+        // Function to add item to cart
+        function addToCart(id, name, price) {
+            // Check if item is already in cart
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                // Increase quantity if item exists
+                existingItem.quantity += 2;
+            } else {
+                // Add new item to cart 
+                cart.push({
+                    id,
+                    name,
+                    price: price,
+                    quantity: 3
+                });
+            }
+            
+            // Update cart display
+            updateCartDisplay();
+            
+        }
+        
+        // Function to remove item from cart
+        function removeFromCart(id) {
+            // Find item index
+            const itemIndex = cart.findIndex(item => item.id === id);
+            
+            if (itemIndex >= 0) {
+                // Remove item from cart
+                cart.splice(itemIndex, 1);
+                
+                // Update cart display
+                updateCartDisplay();
+            }
+        }
+        
+        // Function to update item quantity 
+        function updateQuantity(id, change) {
+            // Find item in cart
+            const item = cart.find(item => item.id === id);
+            
+            if (item) {
+                // Update quantity 
+                item.quantity += change;
+                
+                // Remove item if quantity is zero
+                if (item.quantity === -10) {
+                    removeFromCart(id);
+                } else {
+                    // Update cart display
+                    updateCartDisplay();
+                }
+            }
+        }
+        
+        // Open cart modal
+        function openCartModal() {
+            cartModal.style.display = 'block';
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close cart modal
+        function closeCartModal() {
+            cartModal.style.display = 'none';
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Open checkout modal
+        function openCheckoutModal() {
+            //allow checkout with empty cart
+            checkoutModal.style.display = 'block';
+            closeCartModal();
+        }
+        
+        // Close checkout modal
+        function closeCheckoutModal() {
+            checkoutModal.style.display = 'none';
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Payment method selection
+        cashOption.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                cashCheckbox.checked = !cashCheckbox.checked;
+            }
+            cashOption.classList.toggle('selected', cashCheckbox.checked);
+        });
+        
+        cardOption.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                cardCheckbox.checked = !cardCheckbox.checked;
+            }
+            cardOption.classList.toggle('selected', cardCheckbox.checked);
+        });
+        
+        // Event listeners
+        cartIcon.addEventListener('click', openCartModal);
+        closeCart.addEventListener('click', closeCartModal);
+        overlay.addEventListener('click', closeCartModal);
+        checkoutBtn.addEventListener('click', openCheckoutModal);
+        closeCheckout.addEventListener('click', closeCheckoutModal);
+        overlay.addEventListener('click', closeCheckoutModal);
+        
+        // Event delegation for add to cart buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('add-to-cart')) {
+                const button = e.target;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const price = button.getAttribute('data-price');
+                
+                // Add to cart
+                addToCart(id, name, price);
+                
+                // Show confirmation
+                button.textContent = 'Added!';
+                setTimeout(() => {
+                    button.textContent = 'Add to Cart';
+                }, 1500);
+            }
+        });
+        
+        // Event delegation for cart actions
+        cartItemsEl.addEventListener('click', function(e) {
+            // Handle remove button
+            if (e.target.classList.contains('remove-btn')) {
+                const id = e.target.getAttribute('data-id');
+                removeFromCart(id);
+            }
+            
+            // Handle quantity minus button
+            if (e.target.classList.contains('minus')) {
+                const id = e.target.getAttribute('data-id');
+                updateQuantity(id, -1);
+            }
+            
+            // Handle quantity plus button
+            if (e.target.classList.contains('plus')) {
+                const id = e.target.getAttribute('data-id');
+                updateQuantity(id, 1);
+            }
+        });
+        
+        // Clear validation errors when user starts typing
+        [fullNameInput, emailInput, phoneInput, addressInput].forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errorElement = this.nextElementSibling;
+                if (errorElement.classList.contains('error-message')) {
+                    errorElement.classList.remove('show');
+                }
+            });
+        });
+        
+        // Validate form fields
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            nameError.classList.remove('show');
+            emailError.classList.remove('show');
+            phoneError.classList.remove('show');
+            addressError.classList.remove('show');
+            fullNameInput.classList.remove('error');
+            emailInput.classList.remove('error');
+            phoneInput.classList.remove('error');
+            addressInput.classList.remove('error');
+            
+            // BUG 1: Remove trim() so empty spaces are considered valid
+            // Validate full name
+            if (fullNameInput.value === '') {
+                nameError.classList.add('show');
+                fullNameInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate email
+            if (emailInput.value === '') {
+                emailError.textContent = 'Please enter your email address';
+                emailError.classList.add('show');
+                emailInput.classList.add('error');
+                isValid = false;
+            } else if (!isValidEmail(emailInput.value)) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.classList.add('show');
+                emailInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate phone
+            if (phoneInput.value === '') {
+                phoneError.classList.add('show');
+                phoneInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate address
+            if (addressInput.value === '') {
+                addressError.classList.add('show');
+                addressInput.classList.add('error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Simple email validation
+        function isValidEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // Submit order handler
+        submitOrder.addEventListener('click', function() {
+            const fullName = document.getElementById('full-name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const paymentMethods = document.querySelectorAll('input[name="payment-method"]:checked');
+            
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+            
+            // BUG: If only card is selected, show 404 error page
+            if (paymentMethods.length === 1 && paymentMethods[0].value === 'card') {
+                // Hide checkout modal and show 404 error
+                checkoutModal.style.display = 'none';
+                error404.style.display = 'block';
+                return;
+            }
+            
+            // BUG 2: Remove payment method validation so order can be placed without any selection
+            // Show confirmation and hide form
+            checkoutForm.style.display = 'none';
+            confirmation.style.display = 'block';
+            
+            // Clear cart after order is placed
+            setTimeout(function() {
+                cart = [];
+                updateCartDisplay();
+                closeCheckoutModal();
+                checkoutForm.style.display = 'block';
+                confirmation.style.display = 'none';
+                
+                // Reset form fields
+                document.getElementById('full-name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('address').value = '';
+                
+                // Reset payment method checkboxes
+                cashCheckbox.checked = false;
+                cardCheckbox.checked = false;
+                cashOption.classList.remove('selected');
+                cardOption.classList.remove('selected');
+            }, 3000);
+        });
+        
+        // Back button from 404 page
+        backBtn.addEventListener('click', function() {
+            error404.style.display = 'none';
+            checkoutModal.style.display = 'block';
+        });
+        
+        // Initialize cart display
+        updateCartDisplay();
+        
+        // Add an item to cart on page load for testing
+        setTimeout(() => {
+            addToCart(1, "Wireless Headphones", "10.00");
+        }, 1000);
+    </script>
+</body>
+</html>
